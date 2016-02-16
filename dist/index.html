@@ -52,7 +52,6 @@
         window.SwaggerTranslator.translate();
       }
       window.swaggerUi = new SwaggerUi({
-        showRequestHeaders: true,
         url: url,
         dom_id: "swagger-ui-container",
         supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
@@ -74,19 +73,21 @@
 
           createSubmitTriggersToInjectAuthorizationHeader();
 
-          addApiKeyAuthorization();
+          //addApiKeyAuthorization();
 
         },
         onFailure: function(data) {
           log("Unable to Load SwaggerUI");
         },
         docExpansion: "none",
-        jsonEditor: false,
+        jsonEditor: true,
+        apisSorter: "alpha",
         defaultModelRendering: 'schema',
-        showRequestHeaders: false,
+        showRequestHeaders: true,
         showOperationIds: false
       });
 
+/*
       function addApiKeyAuthorization(){
         var key = encodeURIComponent($('#input_apiKey')[0].value);
         if(key && key.trim() != "") {
@@ -95,6 +96,7 @@
             log("added key " + key);
         }
       }
+*/
 
       // Keep updating the Date header used in authenticating.
       var dateHeaderUpdateTimer = window.setInterval(function() {
@@ -106,10 +108,12 @@
 
       $('#input_apiKey').change(addApiKeyAuthorization);
 
+      /* //Set default authentication values
       var apiUserid = "1";
       $('#input_apiUserid').val(apiUserid);
       var apiKey = "NCXF3acaCuvriMhj0tvnQfYBS46uJSdN";
       $('#input_apiKey').val(apiKey);
+      */
 
       window.swaggerUi.load();
 
@@ -123,6 +127,12 @@
 function createSubmitTriggersToInjectAuthorizationHeader() {
     //Create the Authorization-header just before sending the ajax request.
     $("input[value='Try it out!']").click(function () {
+        //If we dont have Api key, fallback to CGISESSID
+        if(!($("#input_apiKey").val().length)) {
+            //Use cookie auth
+        }
+        else { //Use API-key auth
+
         //Get relevant (and easy to extract) data elements
         var operationObjectBaseElement = $(this).parents("li.operation")[0];
         var httpVerb = $(operationObjectBaseElement).find("span.http_method > a").text();
@@ -139,6 +149,7 @@ function createSubmitTriggersToInjectAuthorizationHeader() {
         var authorizationHeader = "Koha " + userid + ":" + shaObj.getHMAC("HEX");
         addApiKeyAuthorization(authorizationHeader);
         addDateAuthorization();
+        }
     });
 }
 function addApiKeyAuthorization(headerValue){
@@ -170,7 +181,10 @@ function addDateAuthorization(){
           <td colspan="2"><h2>Koha API Authentication parameters</h2></td>
         </tr>
         <tr class="border">
-          <td colspan="2"><p>You need to have a library card to consume our API, then you can add a new API Key for yourself from the OPAC.</p><p>You also need specific permissions to access most of these resources. Ask us!</p></td>
+          <td colspan="2">
+            <p>You need to have a library card to consume our API, then you can add a new API Key for yourself from the OPAC.</p><p>You also need specific permissions to access most of these resources. Ask us!</p>
+            <p>Alternatively you can just login to Koha and use your Koha-session to authenticate and authorize. Make sure the 'Userid' and 'Api key' selections in this form are empty to fallback to Koha-session based authentication, when testing the REST endpoints in this document.</p>
+          </td>
         </tr>
         <tr>
           <td colspan="2"><h3>Authorization-header</h3></td>
