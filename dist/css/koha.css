@@ -14,3 +14,9 @@ body.swagger-section #header {
     width:auto;
     height:auto;
 }
+p.note {
+    width: 960px;
+    margin: 0 auto;
+    text-align: center;
+    padding: 10px;
+}
