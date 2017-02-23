@@ -10,3 +10,7 @@
     list-style: initial;
     margin-left: 20px;
 }
+body.swagger-section #header {
+    width:auto;
+    height:auto;
+}
