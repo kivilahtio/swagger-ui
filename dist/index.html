@@ -107,6 +107,7 @@
       );
 
       $('#input_apiKey').change(addApiKeyAuthorization);
+      $('#useAuthorizationHeader').click(addApiKeyAuthorization);
 
       /* //Set default authentication values
       var apiUserid = "1";
@@ -153,12 +154,20 @@ function createSubmitTriggersToInjectAuthorizationHeader() {
     });
 }
 function addApiKeyAuthorization(headerValue){
+    if(!$("#useAuthorizationHeader").is(":checked")){
+        window.swaggerUi.api.clientAuthorizations.remove("Authorization");
+        return;
+    }
     if(headerValue && headerValue.trim() != "") {
         var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("Authorization", headerValue, "header");
         window.swaggerUi.api.clientAuthorizations.add("Authorization", apiKeyAuth);
     }
 }
 function addDateAuthorization(){
+  if(!$("#useAuthorizationHeader").is(":checked")){
+      window.swaggerUi.api.clientAuthorizations.remove("X-Koha-Date");
+      return;
+  }
   var key = $('#dateHeaderInput')[0].value;
   if(key && key.trim() != "") {
       var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("X-Koha-Date", key, "header");
@@ -189,6 +198,10 @@ function addDateAuthorization(){
         </tr>
         <tr>
           <td colspan="2"><h3>Authorization-header</h3></td>
+        </tr>
+        <tr>
+          <td><label for="useAuthorizationHeader">Use Authorization-header:</label></td>
+          <td><input type="checkbox" id="useAuthorizationHeader" name="useAuthorizationHeader" checked="checked" />
         </tr>
         <tr>
           <td><label for="input_apiUserid">Userid:</label></td>
